@@ -1,0 +1,7 @@
+name: EraOfCreation
+version: 0.0.1
+main: net.crewco.mythos.creation.CreationAddon
+api-version: 1
+authors: [ Crew-co ]
+description: Chaos, the Primordials, and the sickle that ended the sky.
+depends: [ MythosCore ]
