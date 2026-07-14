@@ -7,7 +7,7 @@ A story addon for the [Mythos](https://github.com/Crew-co/Mythos) engine, built 
 own jar, its own release cycle — and exactly one dependency:
 
 ```kotlin
-compileOnly("net.crewco:mythos-addon-api:0.1.0")
+compileOnly("net.crewco:mythos-addon-api:0.1.2")
 ```
 
 No `depends:` in addon.yml. The engine is the plugin, not an addon: it's already running
