@@ -97,17 +97,14 @@ class ImprisonPower(
         val profile = mythos.profiles.profile(target.uniqueId)
         profile.setFlag("creation.imprisoned", true)
 
-        val pit: Location = target.world.spawnLocation.clone().apply { y = target.world.minHeight + 5.0 }
-
-        // Folia: teleportAsync, always. And the effects must be applied on the
-        // region that owns the TARGET, not the one that owns Uranus.
-        target.teleportAsync(pit).thenRun {
-            context.schedulers.entity(target) {
-                target.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 200, 0))
-                target.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 400, 1))
-                target.sendMessage(mm("<dark_red>The sky closes over you. You are in Tartarus, and it is very far down."))
-            }
-        }
+        // Not "a hole at bedrock". Tartarus is a WORLD, and he is sent to it. The realm's
+        // own rules take over from here: blindness, mining fatigue, and no way back up that
+        // doesn't involve somebody else deciding to come and get you.
+        mythos.realms.send(
+            target,
+            "tartarus",
+            "<dark_red>The sky closes over you, and keeps closing, and does not stop.",
+        )
 
         Bukkit.getServer().sendMessage(
             mm("<dark_gray>» <aqua>Uranus <gray>casts <gold>${role.displayName} <gray>into the dark beneath the world."),

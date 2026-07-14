@@ -3,9 +3,11 @@ package net.crewco.mythos.creation
 import net.crewco.mythos.addon.AddonContext
 import net.crewco.mythos.api.Mythos
 import net.crewco.mythos.api.event.DivineDeathEvent
-import net.crewco.mythos.api.event.EraAdvancedEvent
 import net.crewco.mythos.api.event.RoleClaimedEvent
+import net.crewco.mythos.api.event.EraAdvancedEvent
+import net.crewco.mythos.api.event.PlayerBecameSpiritEvent
 import net.crewco.mythos.api.event.RoleReleasedEvent
+import org.bukkit.Material
 import net.crewco.mythos.command.CommandContext.Companion.mm
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -44,6 +46,39 @@ class CreationListener(
                     uranus.sendMessage(mm("<aqua><i>She will bear children. They will be stronger than you."))
                     uranus.sendMessage(mm("<gray>You have <white>/power imprison<gray>. Everyone knows how this goes."))
                 }
+            }
+        }
+    }
+
+    /**
+     * **In the Age of Chaos, the dead have nowhere to stand.**
+     *
+     * A spirit made during this era is put in the Void — a real, empty world — because there
+     * is no world yet to haunt. Once the age turns, they stay wherever they are: the audience
+     * of the Titanomachy needs to be able to *watch* it.
+     */
+    @EventHandler
+    fun onSpirit(event: PlayerBecameSpiritEvent) {
+        if (mythos.eras.currentId() != era) return
+        context.schedulers.globalDelayed(20) {
+            mythos.realms.send(event.player, "void", "You drift out of the world, because there isn't one.")
+        }
+    }
+
+    /**
+     * BUG, fixed: spirits made during the Age of Chaos were left in the Void forever.
+     *
+     * The Void's access rule lets spirits stay, so nothing evicted them — and the audience for
+     * the Titanomachy was standing in an empty world watching nothing at all. When the age
+     * turns, everyone still in the Gap is brought out into the world there now is.
+     */
+    @EventHandler
+    fun onAgeTurns(event: EraAdvancedEvent) {
+        if (event.from?.id != era) return
+        context.schedulers.globalDelayed(100) {
+            val void = mythos.realms.world("void") ?: return@globalDelayed
+            void.players.toList().forEach { stranded ->
+                mythos.realms.send(stranded, "gaia", "There is a world now. Go and watch it happen.")
             }
         }
     }
@@ -99,6 +134,22 @@ class CreationListener(
                 "<dark_gray><i>Gaia made it. One of her children was willing to use it.",
         )
 
+        // THE SCAR. Where the sky's blood fell, the ground is changed — permanently, visibly,
+        // and four addons from now Aphrodite will be claimable because of exactly this.
+        event.player?.let { fallen ->
+            context.schedulers.entity(fallen) {
+                val ground = fallen.location.clone()
+                for (x in -4..4) for (z in -4..4) {
+                    if (x * x + z * z > 16) continue
+                    val block = ground.clone().add(x.toDouble(), -1.0, z.toDouble()).block
+                    if (block.type.isSolid) {
+                        block.type = if ((x + z) % 3 == 0) Material.CRIMSON_NYLIUM else Material.RED_SAND
+                    }
+                }
+                fallen.world.strikeLightningEffect(ground)
+            }
+        }
+
         // Everything he buried comes back up.
         context.schedulers.global {
             CreationContent.TITANS.forEach { titan ->
@@ -107,12 +158,8 @@ class CreationListener(
                     if (profile.hasFlag("creation.imprisoned")) {
                         profile.setFlag("creation.imprisoned", null)
                         Bukkit.getPlayer(uuid)?.let { freed ->
-                            val surface = freed.world.spawnLocation
-                            freed.teleportAsync(surface).thenRun {
-                                context.schedulers.entity(freed) {
-                                    freed.sendMessage(mm("<gold>The weight lifts. You climb out of your mother, into the light."))
-                                }
-                            }
+                            // Out of Tartarus, and back into the world. An actual world change.
+                            mythos.realms.send(freed, "gaia", "The weight lifts. You climb out of your mother, into the light.")
                         }
                     }
                 }
@@ -123,18 +170,8 @@ class CreationListener(
         }
     }
 
-    // ---- opening titles ------------------------------------------------------
-
-    @EventHandler
-    fun onEraAdvanced(event: EraAdvancedEvent) {
-        if (event.to.id != era) return
-        context.schedulers.globalDelayed(60) {
-            Bukkit.getOnlinePlayers().forEach { player ->
-                context.schedulers.entity(player) {
-                    player.sendMessage(mm("<gray>Eight names exist, and no one is wearing them. <white>/claim"))
-                    player.sendMessage(mm("<dark_gray><i>Everyone else waits in the dark. That is not a punishment; it is a queue."))
-                }
-            }
-        }
-    }
+    // The opening used to be broadcast from here, which now double-speaks over the
+    // era's own prologue. Anything the whole server should hear as the age begins
+    // belongs in `EraDefinition.prologue` — the narrator paces it, and the world holds
+    // still while it lands. A listener is for things only SOME players should hear.
 }

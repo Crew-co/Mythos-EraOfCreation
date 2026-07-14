@@ -21,6 +21,12 @@ class CreationAddon : AddonBase() {
     override fun onEnable() {
         val mythos = Mythos.from(context)
 
+        // The cosmos. The engine builds these worlds once every addon has spoken, at the
+        // tail of startup — worlds cannot be created while a server is running.
+        mythos.realms.register(CreationContent.VOID)
+        mythos.realms.register(CreationContent.GAIA)
+        mythos.realms.register(CreationContent.TARTARUS)
+
         mythos.eras.register(CreationContent.ERA_OF_CHAOS)
 
         CreationContent.PRIMORDIALS.forEach(mythos.roles::register)

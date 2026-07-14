@@ -1,5 +1,5 @@
 name: EraOfCreation
-version: 0.1.0
+version: 0.1.2
 main: net.crewco.mythos.creation.CreationAddon
 api-version: 2
 authors: [ Crew-co ]

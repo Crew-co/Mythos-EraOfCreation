@@ -2,6 +2,10 @@ package net.crewco.mythos.creation
 
 import net.crewco.mythos.api.era.EraDefinition
 import net.crewco.mythos.api.era.Objective
+import net.crewco.mythos.api.realm.RealmDefinition
+import net.crewco.mythos.api.realm.RealmKind
+import net.crewco.mythos.api.realm.RealmRules
+import org.bukkit.potion.PotionEffectType
 import net.crewco.mythos.api.role.ClaimResult
 import net.crewco.mythos.api.role.ClaimRule
 import net.crewco.mythos.api.role.ClaimRules
@@ -32,6 +36,67 @@ import net.crewco.mythos.api.story.title
 object CreationContent {
 
     const val ERA = "chaos"
+
+    // ---- the cosmos ---------------------------------------------------------
+
+    /**
+     * **The Void is a world.** Not a region with a fancy name — an empty world, generated
+     * with nothing in it, because nothing has been made yet.
+     *
+     * Every spirit in the Age of Chaos stands here. There is no ground, no time, no weather,
+     * no Tuesday. When the age turns and there is finally a world to haunt, they leave.
+     */
+    val VOID = RealmDefinition(
+        id = "void",
+        displayName = "The Gap",
+        kind = RealmKind.VOID,
+        access = RealmRules.any(RealmRules.SPIRITS, RealmRules.roles("chaos", "nyx", "erebus")),
+        refusal = "<dark_gray><i>There is nothing here for you. There is nothing here at all.",
+        entryLore = listOf(
+            "<dark_gray><i>Not darkness — darkness is a thing.",
+            "<dark_gray><i>You are in the space where things are not yet.",
+        ),
+        flight = true,
+        still = true, // no time, no weather, no mobs. The Void does not have a Tuesday.
+        platformRadius = 8,
+        platformMaterial = "BLACK_CONCRETE",
+    )
+
+    /** Gaia is the world the server already has. Nobody generates the ground; it was here first. */
+    val GAIA = RealmDefinition(
+        id = "gaia",
+        displayName = "Gaia",
+        kind = RealmKind.PRIMARY,
+        entryLore = listOf("<green><i>Ground. Under everything, and under everyone."),
+    )
+
+    /**
+     * **Tartarus.** As far below Hades as the earth is below the sky, and it is a separate
+     * world because that is what it *is*.
+     *
+     * `SENT_ONLY`: you cannot walk in. You are *put* here — by Uranus, by Zeus, by the engine.
+     * Things go into Tartarus. They do not come out on their own.
+     */
+    val TARTARUS = RealmDefinition(
+        id = "tartarus",
+        displayName = "Tartarus",
+        kind = RealmKind.NETHER,
+        // The gods may go down — somebody has to be the jailer, and later somebody has to go
+        // and let the Cyclopes out. The IMPRISONED may be here, but the leash is what stops
+        // them leaving: being allowed somewhere and being able to get out are different.
+        access = RealmRules.any(
+            RealmRules.DIVINE,
+            RealmRules.flagged("creation.imprisoned"),
+            RealmRules.flagged("titanomachy.imprisoned"),
+            RealmRules.roles("tartarus"),
+        ),
+        refusal = "<dark_red>You cannot get in. <dark_gray><i>That is not the problem with Tartarus.",
+        entryLore = listOf(
+            "<dark_red><i>An anvil would fall for nine days to get here.",
+            "<dark_gray><i>Things are put into you. They do not come out.",
+        ),
+        ambient = listOf(PotionEffectType.BLINDNESS, PotionEffectType.MINING_FATIGUE),
+    )
 
     /** Titans cannot be claimed. Gaia bears them, or they don't exist. */
     private val BORN_NOT_CLAIMED = ClaimRule { _, _ ->
