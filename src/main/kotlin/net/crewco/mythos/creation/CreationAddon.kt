@@ -8,21 +8,21 @@ import net.crewco.mythos.api.Mythos
  *
  * The shape every later myth copies:
  *   1. grab the core services
- *   2. register an era (with the id of the era that FOLLOWS it)
- *   3. register the roles that era introduces
- *   4. register the powers those roles grant
- *   5. register one listener that turns player actions into completed objectives
+ *   2. register the realms, the era (naming the era that FOLLOWS it), and the roles it introduces
+ *   3. wire the ACTS — triggers, rites and director fallbacks — that carry the story forward
+ *   4. register one listener for the things that are genuinely engine events
  *
- * When its last objective is struck, core advances the world to `next` — and this
- * addon goes quiet forever, without ever knowing what came after it.
+ * Note what is *not* here any more: not one power, not one command. The age is claimed, borne,
+ * buried, forged and cut down entirely through the world. When its last objective is struck, core
+ * advances to `next` — and this addon goes quiet forever, never knowing what came after it.
  */
 class CreationAddon : AddonBase() {
 
     override fun onEnable() {
         val mythos = Mythos.from(context)
 
-        // The cosmos. The engine builds these worlds once every addon has spoken, at the
-        // tail of startup — worlds cannot be created while a server is running.
+        // The cosmos. The engine builds these worlds once every addon has spoken, at the tail of
+        // startup — worlds cannot be created while a server is running.
         mythos.realms.register(CreationContent.VOID)
         mythos.realms.register(CreationContent.GAIA)
         mythos.realms.register(CreationContent.TARTARUS)
@@ -32,11 +32,9 @@ class CreationAddon : AddonBase() {
         CreationContent.PRIMORDIALS.forEach(mythos.roles::register)
         CreationContent.TITANS.forEach(mythos.roles::register)
 
-        mythos.powers.register(BirthPower(mythos, context))
-        mythos.powers.register(ImprisonPower(mythos, context))
-        mythos.powers.register(SicklePower(mythos, context))
-        mythos.powers.register(VeilPower(context))
-        mythos.powers.register(UnmakePower(mythos, context))
+        // The acts: Gaia's Seed, Uranus's hands, the forge rite, the sickle — and the Director that
+        // makes sure the age turns even when the house is too small to perform all of it.
+        CreationRites(mythos, context).wire()
 
         context.registerListener(CreationListener(mythos, context))
 

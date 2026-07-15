@@ -6,6 +6,10 @@ A story addon for the [Mythos](https://github.com/Crew-co/Mythos) engine — the
 
 📖 **[Read the wiki →](https://github.com/Crew-co/EraOfCreation/wiki)** · roles, powers, extension points
 
+## How it's played
+
+Not one `/power`, not one command. Gaia bears a Titan by **using the Seed of Earth on the ground**; Uranus buries a child by **right-clicking them**; the sickle is **forged** in two acts and **swung** to end the Sky; Nyx vanishes on a **sneak**. Every required beat also has a Director fallback, so the age turns even with a handful of players and no Uranus. Full table: **[How the age is played](wiki/Powers.md)**.
+
 ## Install
 
 Drop the jar in `plugins/Mythos/addons/`. That's it — no `depends:`, no configuration, no load order

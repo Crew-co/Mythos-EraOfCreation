@@ -161,13 +161,13 @@ object CreationContent {
         },
 
         objectives = listOf(
-            Objective("chaos_stirs", "Something stirs in the gap"),
-            Objective("earth_and_sky", "Earth is covered by Sky"),
-            Objective("children_born", "Gaia bears six children to Uranus"),
-            Objective("the_imprisonment", "Uranus casts his children into Tartarus"),
-            Objective("the_sickle", "Gaia forges a sickle of grey adamant"),
-            Objective("the_unmaking", "Sky is cut from Earth", hidden = true),
-            Objective("first_love", "Eros walks among them", optional = true),
+            Objective("chaos_stirs", "Something stirs in the gap", hint = "Someone claims Chaos with /claim."),
+            Objective("earth_and_sky", "Earth is covered by Sky", hint = "Both Gaia and Uranus must be claimed."),
+            Objective("children_born", "Gaia bears six children to Uranus", hint = "Gaia right-clicks the ground with the Seed of Earth."),
+            Objective("the_imprisonment", "Uranus casts his children into Tartarus", hint = "Uranus right-clicks one of his Titan children."),
+            Objective("the_sickle", "Gaia forges a sickle of grey adamant", hint = "Gaia raises the grey adamant, then kneels over it."),
+            Objective("the_unmaking", "Sky is cut from Earth", hidden = true, hint = "A child strikes Uranus with the Adamantine Sickle."),
+            Objective("first_love", "Eros walks among them", optional = true, hint = "Someone claims Eros."),
         ),
     )
 
@@ -217,28 +217,24 @@ object CreationContent {
             "chaos", "Chaos", "<dark_purple>",
             listOf("the void", "the gap"),
             listOf("You are the space where things are not yet.", "Everything that follows is a wound in you."),
-            powers = listOf("unmake"),
             endurance = Endurance.ERA, // nothing in the Titanomachy is about the void
         ),
         primordial(
             "gaia", "Gaia", "<green>",
             listOf("earth", "birth"),
             listOf("You are the ground under all of it.", "Everything that lives, lives on you. Everything that suffers, suffers on you."),
-            powers = listOf("birth", "sickle"),
         ),
         primordial(
             "uranus", "Uranus", "<aqua>",
             listOf("sky", "dominion"),
             listOf("You cover the Earth entirely. Nothing escapes you.", "You will be a tyrant. It is written. Try anyway."),
-            powers = listOf("imprison"),
-            // Once the sickle falls, the sky is sundered and never worn again.
-            succession = Succession.CLOSED,
+            // Re-claimable while he lives — abdication just passes the sky on. Only the SICKLE seals
+            // the role (CreationListener seals it on the cut), so the sky is sundered and never worn again.
         ),
         primordial(
             "nyx", "Nyx", "<dark_gray>",
             listOf("night", "fear"),
             listOf("Even Zeus will fear you, one day.", "You are older than his fear."),
-            powers = listOf("veil"),
             endurance = Endurance.ERA, // she matters again much later — a myth can reopen her
         ),
         primordial(
